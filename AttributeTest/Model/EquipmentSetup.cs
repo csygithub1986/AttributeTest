@@ -17,6 +17,11 @@ namespace AttributeTest
         public string AssemblyName { get { return _AssemblyName; } set { if (_AssemblyName != value) { _AssemblyName = value; OnNotifyPropertyChanged("AssemblyName"); } } }
         private string _AssemblyName;
 
+
+        public Type ClassType { get { return _ClassType; } set { if (_ClassType != value) { _ClassType = value; OnNotifyPropertyChanged("ClassType"); } } }
+        private Type _ClassType;
+
+
         /// <summary>
         ///   类的全名，包括命名空间，但不包括程序集
         /// </summary>

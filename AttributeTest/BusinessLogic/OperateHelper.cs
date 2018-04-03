@@ -98,7 +98,8 @@ namespace AttributeTest
                         //IsReal = false,
                         IsMultiStepOperation = operAttr.OperateType == typeof(EMultipleOperateType),
                         ClassFullName = equipType.FullName,
-                        AssemblyName = equipType.Assembly.FullName
+                        AssemblyName = equipType.Assembly.FullName,
+                        ClassType= equipType
                     });
 
                 }

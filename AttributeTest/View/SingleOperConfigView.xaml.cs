@@ -18,11 +18,12 @@ namespace AttributeTest
     /// <summary>
     /// ConfigView.xaml 的交互逻辑
     /// </summary>
-    public partial class ConfigView : UserControl
+    public partial class SingleOperConfigView : UserControl
     {
-        public ConfigView()
+        public SingleOperConfigView()
         {
             InitializeComponent();
+            DataContext = new SingleOperConfigVM();
         }
     }
 }

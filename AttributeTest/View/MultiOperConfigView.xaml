@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="AttributeTest.ConfigView"
+﻿<UserControl x:Class="AttributeTest.MultiOperConfigView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,14 +7,5 @@
              xmlns:local="clr-namespace:AttributeTest" x:Name="uc"
              mc:Ignorable="d" d:DataContext="{d:DesignInstance local:ConfigVM}"
              d:DesignHeight="600" d:DesignWidth="1000">
-    <Grid>
-        <TabControl TabStripPlacement="Left" >
-            <TabItem Width="100" Height="40" Header="单设备操作" FontSize="16">
-                <local:SingleOperConfigView/>
-            </TabItem>
-            <TabItem Width="100" Height="40" Header="多步操作"  FontSize="16">
-                <local:MultiOperConfigView/>
-            </TabItem>
-        </TabControl>
-    </Grid>
+    <Grid></Grid>
 </UserControl>

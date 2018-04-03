@@ -21,11 +21,9 @@ namespace AttributeTest
 
         public Type PropertyType { get; set; }
 
-        public object PropertyValue { get; set; }
+        public ValueType PropertyValue { get { return _PropertyValue; } set { if (_PropertyValue != value) { _PropertyValue = value; OnNotifyPropertyChanged("PropertyValue"); } } }
+        private ValueType _PropertyValue;
 
-
-        //操作条件，即关联设备的属性和取值对(string 为PropertyInfo的Name，有可能是bool等基础类型，有可能是equipment对象，或者集合)
-        //public Dictionary<string, object> RelatedEquipPropDic { get; set; }//TODO:弃用
 
         //操作条件，即关联设备的属性和取值对
         public List<OperateCondition> RelatedEquipProList { get; set; }

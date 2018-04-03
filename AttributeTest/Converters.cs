@@ -51,7 +51,7 @@ namespace AttributeTest
                     return reverse ? Visibility.Visible : Visibility.Collapsed;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
