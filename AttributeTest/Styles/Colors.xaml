@@ -1,0 +1,29 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:AttributeTest">
+    <Color x:Key="ThemeColorEnableBack1" A="#FF" R="#2B" G="#98" B="#DD"/>
+    <Color x:Key="ThemeColorDisableBack1" A="#FF" R="#D2" G="#D5" B="#D8"/>
+    <Color x:Key="ThemeColorEnableBorder1" A="#FF" R="#2B" G="#98" B="#DD"/>
+    <SolidColorBrush x:Key="ThemeBrushEnableBorder" Color="{StaticResource ResourceKey=ThemeColorEnableBorder1}"/>
+    <SolidColorBrush x:Key="ThemeBrushEnableBack" Color="{StaticResource ResourceKey=ThemeColorEnableBack1}"/>
+    <SolidColorBrush x:Key="ThemeBrushDisableBack" Color="{StaticResource ResourceKey=ThemeColorDisableBack1}"/>
+    <SolidColorBrush x:Key="WindowsBorderColor" Color="#FF7097D0"/>
+    <SolidColorBrush x:Key="TextBoxBorderColor" Color="#FF7097D0"/>
+
+    <SolidColorBrush x:Key="CornerDisableBrush" Color="#FFABADB3" />
+    <SolidColorBrush x:Key="CornerBorderBrush" Color="#EEFEEE" />
+    <SolidColorBrush x:Key="MouseOverColor" Color="#FF3399FF" />
+
+    <LinearGradientBrush x:Key="CBorderMouseBrush" StartPoint="0.5,0">
+        <LinearGradientBrush.GradientStops >
+            <GradientStop Color="#FFEE6A0F" Offset="0"/>
+            <GradientStop Color="#FFDE9766" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="CornerButtonStyleBrush" EndPoint="0,1" StartPoint="0,0">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FF297FE6" Offset="0" />
+            <GradientStop Color="#FF748EA8" Offset="1" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+</ResourceDictionary>
