@@ -119,6 +119,18 @@
             </Expander>
         </DataTemplate>
 
+        <DataTemplate x:Key="StepDataTemplate">
+            <Grid x:Name="grid" Background="White" Margin="0,2" Width="300">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MaxWidth="120"/>
+                    <ColumnDefinition Width="*"/>
+                    <!--<ColumnDefinition Width="80"/>-->
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding EquipmentMark}" TextTrimming="CharacterEllipsis"/>
+                <CheckBox x:Name="btn" Grid.Column="1" Content="选择" IsChecked="{Binding IsSelected}"/>
+            </Grid>
+        </DataTemplate>
+
         <!--试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验-->
         <ItemsPanelTemplate x:Key="ConditionItemsPanelTemplate">
             <VirtualizingStackPanel IsItemsHost="True"/>
@@ -187,9 +199,37 @@
             </Setter>
         </Style>
         <!--End 试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验试验-->
+
+        <DataTemplate x:Key="ConditionSetupTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="0">
+                    <ListBox ItemsSource="{Binding OperationConditions}" ItemsPanel="{DynamicResource ConditionItemsPanelTemplate}" ItemContainerStyle="{DynamicResource ListBoxItemStyle1}" ItemTemplate="{DynamicResource ConditionDataTemplate}"/>
+                </ScrollViewer>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1">
+                    <ListBox ItemsSource="{Binding OperationConditions}" ItemsPanel="{DynamicResource ConditionItemsPanelTemplate}" ItemContainerStyle="{DynamicResource ListBoxItemStyle1}" ItemTemplate="{DynamicResource AllConditionDataTemplate}"/>
+                </ScrollViewer>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="StepSetupTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="0">
+                    <ListBox ItemsSource="{Binding OperationSteps}" ItemsPanel="{DynamicResource ConditionItemsPanelTemplate}" ItemContainerStyle="{DynamicResource ListBoxItemStyle1}" ItemTemplate="{DynamicResource StepDataTemplate}"/>
+                </ScrollViewer>
+            </Grid>
+        </DataTemplate>
+
     </UserControl.Resources>
-    
-    
+
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -204,23 +244,41 @@
 
         <DockPanel Grid.Column="1" MinWidth="100" Margin="5">
             <Label DockPanel.Dock="Top" Content="操作" Style="{StaticResource GroupHeaderLabelStyle}"/>
-            <ListBox ItemsSource="{Binding Operates}" SelectedValue="{Binding SelectedOperate}" ItemTemplate="{StaticResource OperTypeDataTemplate}"/>
+            <ListBox ItemTemplate="{StaticResource OperTypeDataTemplate}">
+                <ListBox.Style>
+                    <Style TargetType="ListBox">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedEquipSetup.IsMultiStepOperation}" Value="False">
+                                <Setter Property="ItemsSource" Value="{Binding SingleOperates}"/>
+                                <Setter Property="SelectedValue" Value="{Binding SelectedSingleOperate}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding SelectedEquipSetup.IsMultiStepOperation}" Value="True">
+                                <Setter Property="ItemsSource" Value="{Binding MultipleOperates}"/>
+                                <Setter Property="SelectedValue" Value="{Binding SelectedMultipleOperate}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.Style>
+            </ListBox>
         </DockPanel>
 
         <DockPanel Grid.Column="3" Margin="5">
             <Label DockPanel.Dock="Top" Content="操作条件" Style="{StaticResource GroupHeaderLabelStyle}"/>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="0">
-                    <ListBox ItemsSource="{Binding OperationConditions}" ItemsPanel="{DynamicResource ConditionItemsPanelTemplate}" ItemContainerStyle="{DynamicResource ListBoxItemStyle1}" ItemTemplate="{DynamicResource ConditionDataTemplate}"/>
-                </ScrollViewer>
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1">
-                    <ListBox ItemsSource="{Binding OperationConditions}" ItemsPanel="{DynamicResource ConditionItemsPanelTemplate}" ItemContainerStyle="{DynamicResource ListBoxItemStyle1}" ItemTemplate="{DynamicResource AllConditionDataTemplate}"/>
-                </ScrollViewer>
-            </Grid>
+            <ContentControl Content="{Binding}">
+                <ContentControl.Style>
+                    <Style TargetType="ContentControl">
+                        <Setter Property="ContentTemplate" Value="{StaticResource ConditionSetupTemplate}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedEquipSetup.IsMultiStepOperation}" Value="True">
+                                <Setter Property="ContentTemplate" Value="{StaticResource StepSetupTemplate}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
+
+
+
         </DockPanel>
 
     </Grid>

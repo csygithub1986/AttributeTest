@@ -4,46 +4,65 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
 using AttributeTest.Attributes;
+using System.Collections.ObjectModel;
 
 namespace AttributeTest
 {
     public class SingleOperConfigVM : ViewModelBase
     {
         #region 属性
-        public Dictionary<EquipmentSetup, Dictionary<SingleOperate, Dictionary<string, List<OperateCondition>>>> SetupDataSource { get { return _SetupDataSource; } set { if (_SetupDataSource != value) { _SetupDataSource = value; OnNotifyPropertyChanged("SetupDataSource"); } } }
-        private Dictionary<EquipmentSetup, Dictionary<SingleOperate, Dictionary<string, List<OperateCondition>>>> _SetupDataSource;
+        public Dictionary<EquipmentSetup, Dictionary<SingleOperate, Dictionary<string, List<OperateCondition>>>> SingleOperateDataSource { get { return _SingleOperateDataSource; } set { if (_SingleOperateDataSource != value) { _SingleOperateDataSource = value; OnNotifyPropertyChanged("SingleOperateDataSource"); } } }
+        private Dictionary<EquipmentSetup, Dictionary<SingleOperate, Dictionary<string, List<OperateCondition>>>> _SingleOperateDataSource;
+
+        public Dictionary<EquipmentSetup, Dictionary<MultipleOperate, List<SingleOperate>>> MultipleOperateDataSource { get { return _MultipleOperateDataSource; } set { if (_MultipleOperateDataSource != value) { _MultipleOperateDataSource = value; OnNotifyPropertyChanged("MultipleOperateDataSource"); } } }
+        private Dictionary<EquipmentSetup, Dictionary<MultipleOperate, List<SingleOperate>>> _MultipleOperateDataSource;
+
 
         public List<EquipmentSetup> EquipmentSetups { get { return _EquipmentSetups; } set { if (_EquipmentSetups != value) { _EquipmentSetups = value; OnNotifyPropertyChanged("EquipmentSetups"); } } }
         private List<EquipmentSetup> _EquipmentSetups;
 
-        public EquipmentSetup SelectedEquipSetup { get { return _SelectedEquipSetup; } set { if (_SelectedEquipSetup != value) { _SelectedEquipSetup = value; Operates = value == null ? null : SetupDataSource[value].Keys.ToList(); OnNotifyPropertyChanged("SelectedEquipSetup"); } } }
+        public EquipmentSetup SelectedEquipSetup { get { return _SelectedEquipSetup; } set { if (_SelectedEquipSetup != value) { _SelectedEquipSetup = value; OnSelectedEquipSetupChanged(); OnNotifyPropertyChanged("SelectedEquipSetup"); } } }
         private EquipmentSetup _SelectedEquipSetup;
 
-        public List<SingleOperate> Operates { get { return _Operates; } set { if (_Operates != value) { _Operates = value; OnNotifyPropertyChanged("Operates"); } } }
-        private List<SingleOperate> _Operates;
 
-        public SingleOperate SelectedOperate { get { return _SelectedOperate; } set { if (_SelectedOperate != value) { _SelectedOperate = value; OperationConditions = value == null ? null : SetupDataSource[_SelectedEquipSetup][value]; OnNotifyPropertyChanged("SelectedOperate"); } } }
-        private SingleOperate _SelectedOperate;
+        public List<SingleOperate> SingleOperates { get { return _SingleOperates; } set { if (_SingleOperates != value) { _SingleOperates = value; OnNotifyPropertyChanged("SingleOperates"); } } }
+        private List<SingleOperate> _SingleOperates;
+
+        public SingleOperate SelectedSingleOperate { get { return _SelectedSingleOperate; } set { if (_SelectedSingleOperate != value) { _SelectedSingleOperate = value; OperationConditions = value == null ? null : SingleOperateDataSource[_SelectedEquipSetup][value]; OnNotifyPropertyChanged("SelectedSingleOperate"); } } }
+        private SingleOperate _SelectedSingleOperate;
+
+        public List<MultipleOperate> MultipleOperates { get { return _MultipleOperates; } set { if (_MultipleOperates != value) { _MultipleOperates = value; OnNotifyPropertyChanged("MultipleOperates"); } } }
+        private List<MultipleOperate> _MultipleOperates;
+
+        public MultipleOperate SelectedMultipleOperate { get { return _SelectedMultipleOperate; } set { if (_SelectedMultipleOperate != value) { _SelectedMultipleOperate = value; OperationSteps = value == null ? null : new ObservableCollection<SingleOperate>(MultipleOperateDataSource[_SelectedEquipSetup][value]); OnNotifyPropertyChanged("SelectedMultipleOperate"); } } }
+        private MultipleOperate _SelectedMultipleOperate;
+
 
         public Dictionary<string, List<OperateCondition>> OperationConditions { get { return _OperationConditions; } set { if (_OperationConditions != value) { _OperationConditions = value; OnNotifyPropertyChanged("OperationConditions"); } } }
         private Dictionary<string, List<OperateCondition>> _OperationConditions;
+
+
+        public ObservableCollection<SingleOperate> OperationSteps { get { return _OperationSteps; } set { if (_OperationSteps != value) { _OperationSteps = value; OnNotifyPropertyChanged("OperationSteps"); } } }
+        private ObservableCollection<SingleOperate> _OperationSteps;
 
         #endregion
 
         public SingleOperConfigVM()
         {
-            EquipmentSetups = OperateHelper.Instance.EquipmentSetupDic.Where(p => p.Value.IsMultiStepOperation == false).Select(p => p.Value).ToList();
+            EquipmentSetups = OperateHelper.Instance.EquipmentSetupDic.Select(p => p.Value).ToList();//.Where(p => p.Value.IsMultiStepOperation == false).Select(p => p.Value).ToList();
             AddToConditionCommand = new CommandBase(AddToCondition, null);
             DeleteConditionCommand = new CommandBase(DeleteCondition, null);
-            InitDataSource();
+            InitSingleOperDataSource();
+            InitMultipleOperDataSource();
         }
 
-        private void InitDataSource()
+        private void InitSingleOperDataSource()
         {
             var dataSource = new Dictionary<EquipmentSetup, Dictionary<SingleOperate, Dictionary<string, List<OperateCondition>>>>();
             foreach (var equipSetup in EquipmentSetups)
             {
-                var dic1 = new Dictionary<SingleOperate, Dictionary<string, List<OperateCondition>>>();
+                if (equipSetup.IsMultiStepOperation) continue;
+                var tempDic = new Dictionary<SingleOperate, Dictionary<string, List<OperateCondition>>>();
                 var operateList = OperateHelper.Instance.SingleOperConditionDic.Keys.Where(p => p.EquipmentType.Name == equipSetup.ClassName).ToList();
                 foreach (var operate in operateList)
                 {
@@ -120,12 +139,82 @@ namespace AttributeTest
                         }
                     }
 
-                    dic1.Add(operate, tempAllConditions);
+                    tempDic.Add(operate, tempAllConditions);
                 }
-                dataSource.Add(equipSetup, dic1);
+                dataSource.Add(equipSetup, tempDic);
             }
-            SetupDataSource = dataSource;
+            SingleOperateDataSource = dataSource;
         }
+
+        private void InitMultipleOperDataSource()
+        {
+            var dataSource = new Dictionary<EquipmentSetup, Dictionary<MultipleOperate, List<SingleOperate>>>();
+            foreach (var equipSetup in EquipmentSetups)
+            {
+                if (!equipSetup.IsMultiStepOperation) continue;
+                var tempDic = new Dictionary<MultipleOperate, List<SingleOperate>>();
+                var operateList = OperateHelper.Instance.MultiOperConditionDic.Keys.Where(p => p.EquipmentType.Name == equipSetup.ClassName).ToList();
+                foreach (var operate in operateList)
+                {
+                    var stepList = new List<SingleOperate>();
+                    var equipProps = equipSetup.ClassType.GetProperties();
+                    foreach (var equipProp in equipProps)
+                    {
+                        if (equipProp.GetCustomAttributes(typeof(OperationConditionAttribute), false).Length == 1)
+                        {
+                            string mark = (equipProp.GetCustomAttributes(typeof(OperationConfigMarkAttribute), false).FirstOrDefault() as OperationConfigMarkAttribute)?.Mark;
+
+                            Type relatedEquipType = null;
+                            if (equipProp.PropertyType.IsSubclassOf(typeof(EquipmentBase)))
+                            {
+                                relatedEquipType = equipProp.PropertyType;
+                            }
+                            else if (equipProp.PropertyType.GenericTypeArguments.Length == 1 && (typeof(IList).IsAssignableFrom(equipProp.PropertyType)) && equipProp.PropertyType.GenericTypeArguments[0].IsSubclassOf(typeof(EquipmentBase)))
+                            {
+                                relatedEquipType = equipProp.PropertyType.GenericTypeArguments[0];
+                            }
+                            else continue;
+                            if (relatedEquipType == null) continue;
+                            //获得关联设备的所有属性（TODO：根据之前的配置排序）
+                            SingleOperate mo = new SingleOperate() { EquipmentType = relatedEquipType, OperateType = default(ESingleOperateType), EquipmentMark = mark };
+                            stepList.Add(mo);
+                        }
+                    }
+                    //复制已经有的属性值
+                    var singleSteps = OperateHelper.Instance.MultiOperConditionDic[new MultipleOperate() { EquipmentType = equipSetup.ClassType, OperateType = operate.OperateType }];
+                    foreach (var singleOper in singleSteps)
+                    {
+                        var oper = stepList.FirstOrDefault(p => p.EquipmentType == singleOper.EquipmentType);
+                        if (oper != null)
+                        {
+                            oper.IsSelected = singleOper.IsSelected;
+                            oper.OperateType = singleOper.OperateType;
+                        }
+                    }
+                    tempDic.Add(operate, stepList);
+                }
+                dataSource.Add(equipSetup, tempDic);
+            }
+            MultipleOperateDataSource = dataSource;
+        }
+
+        private void OnSelectedEquipSetupChanged()
+        {
+            if (_SelectedEquipSetup == null)
+            {
+                SingleOperates = null;
+                MultipleOperates = null;
+            }
+            if (_SelectedEquipSetup.IsMultiStepOperation == false)
+            {
+                SingleOperates = SingleOperateDataSource[_SelectedEquipSetup].Keys.ToList();
+            }
+            else
+            {
+                MultipleOperates = MultipleOperateDataSource[_SelectedEquipSetup].Keys.ToList();
+            }
+        }
+
 
         #region 命令定义和执行
         public CommandBase AddToConditionCommand { get; set; }

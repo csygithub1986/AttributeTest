@@ -122,7 +122,7 @@ namespace AttributeTest
             }
         }
 
-        //貌似可以用ObservableCollection，而不用ObservableDictionary（用于股道图绑定，需要Dictionary）
+        //可以用ObservableCollection，而不用ObservableDictionary（但用于股道图绑定，需要Dictionary）
         public ObservableDictionary<string, EquipmentSetup> EquipmentSetupDic { get { return _EquipmentSetupDic; } set { if (_EquipmentSetupDic != value) { _EquipmentSetupDic = value; OnNotifyPropertyChanged("EquipmentSetupDic"); } } }
         private ObservableDictionary<string, EquipmentSetup> _EquipmentSetupDic = new ObservableDictionary<string, EquipmentSetup>();
 

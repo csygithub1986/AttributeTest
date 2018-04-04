@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AttributeTest.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,33 +10,36 @@ namespace AttributeTest
     /// <summary>
     /// 操作类
     /// </summary>
-    public class SingleOperate
+    public class SingleOperate : ModelBase
     {
         //被操作对象
         public Type EquipmentType { get; set; }
 
+        //public string EquipmentMark
+        //{
+        //    get
+        //    {
+        //        object[] attrs = EquipmentType?.GetCustomAttributes(typeof(OperationConfigMarkAttribute), false);
+        //        if (attrs != null && attrs.Length == 1)
+        //        {
+        //            return (attrs[0] as OperationConfigMarkAttribute)?.Mark;
+        //        }
+        //        return string.Empty;
+        //    }
+        //}
+        public string EquipmentMark { get; set; }
+
         //操作类型
         public ESingleOperateType OperateType { get; set; }
 
-        ////是否是单步操作（对应流程化多步操作）
-        //public bool IsSingleOperate { get; }
 
-        //public SingleOperate()
-        //{
-        //    switch (OperateType)
-        //    {
-        //        case SingleOperateType.验电:
-        //        case SingleOperateType.分闸:
-        //        case SingleOperateType.合闸:
-        //            IsSingleOperate = true;
-        //            break;
-        //        case SingleOperateType.断电:
-        //        case SingleOperateType.送电:
-        //            IsSingleOperate = false;
-        //            break;
-        //    }
 
-        //}
+        /// <summary>
+        /// UI辅助属性。该步骤是否被选为批操作中的一步
+        /// </summary>
+        public bool IsSelected { get { return _IsSelected; } set { if (_IsSelected != value) { _IsSelected = value; OnNotifyPropertyChanged("IsSelected"); } } }
+        private bool _IsSelected;
+
 
         public override bool Equals(object obj)
         {
